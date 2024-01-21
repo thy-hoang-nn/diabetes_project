@@ -9,7 +9,6 @@ from pathlib import Path
 # from dotenv import load_dotenv
 
 
-
 # load_dotenv()
 
 
@@ -24,12 +23,10 @@ PACKAGE_DIR = Path(BASE_DIR, "diabetes")
 
 EXAMPLE_DIR = Path(BASE_DIR, "example")
 
-MODEL_DIR = Path(PACKAGE_DIR, "models", "gscv-0.81.sav")
+MODEL_DIR = Path(PACKAGE_DIR, "models", "gscv-0.843.sav")
 
 
 DATA_DIR = Path(PACKAGE_DIR, "data", "diabetes.csv")
-
-
 
 
 dir = os.listdir()
@@ -40,8 +37,10 @@ logging_config = {
     "formatters": {
         "minimal": {"format": "%(message)s"},
         "detailed": {
-            "format": "%(levelname)s %(asctime)s [%(name)s:%(filename)s:\
-                %(funcName)s:%(lineno)d]\n%(message)s\n"
+            "format": (
+                "%(levelname)s %(asctime)s [%(name)s:%(filename)s:            "
+                "    %(funcName)s:%(lineno)d]\n%(message)s\n"
+            )
         },
     },
     "handlers": {

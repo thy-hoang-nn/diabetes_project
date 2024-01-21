@@ -28,4 +28,4 @@ RUN poetry install
 
 
 # Run your FastAPI application using uvicorn
-CMD start-api
+CMD ["python", "chat_api/main.py"]

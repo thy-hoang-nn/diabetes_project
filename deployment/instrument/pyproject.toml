@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "chat-api"
+name = "instrument"
 version = "0.1.0"
 description = ""
 authors = ["thy-hoang-nn <hoangthynguyennguyen@gmail.com>"]
 
-packages = [{include = "chat_api"}]
+packages = [{include = "instrument"}]
 
 [tool.poetry.dependencies]
 python = "^3.9.0"
@@ -29,5 +29,4 @@ python-dotenv = "^1.0.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-start-api = "chat_api.main:run"
+
