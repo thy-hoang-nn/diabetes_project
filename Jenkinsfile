@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building image for deployment..'
-                    dockerImage = docker.build("-f chat_api/Dockerfile ${registry}:${BUILD_NUMBER}")
+                    dockerImage = docker.build("${registry}:${BUILD_NUMBER}", "-f chat_api/Dockerfile .")
                     echo 'Pushing image to dockerhub..'
                     docker.withRegistry( '', registryCredential ) {
                         dockerImage.push()
