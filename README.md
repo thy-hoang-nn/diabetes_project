@@ -69,6 +69,13 @@ cd deployement/instrument/metric && poetry run python metrics.py
 ```
 This will start the Metric API, allowing you to interact with it.
 
+## Accessing Grafana
+Once the Docker containers are up and running, you can access Grafana by opening your web browser and navigating to http://localhost:3000. Use the default credentials (username: admin, password: admin) to log in.
+
+## Accessing Prometheus
+To access Prometheus, open your web browser and go to http://localhost:9090. This will take you to the Prometheus web interface, allowing you to explore and monitor your metrics.
+
+
 ## Repo structure
 ```
 
