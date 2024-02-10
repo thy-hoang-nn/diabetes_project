@@ -3,8 +3,8 @@ version: '3.9'
 services:
   api:
     build:
-      context: .
-      dockerfile: ./chat_api/Dockerfile
+      context: ../..
+      dockerfile: chat_api/Dockerfile
     ports:
       - "8088:8001"
    

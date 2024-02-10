@@ -24,7 +24,23 @@ from fastapi.responses import JSONResponse
 import uvicorn
 
 from loguru import logger
-import os
+from fastapi.encoders import jsonable_encoder
+import pandas as pd
+
+from pydantic import BaseModel
+from typing import Optional
+
+
+class Diabetes_data(BaseModel):
+    Pregnancies: int
+    Glucose: int
+    BloodPressure: Optional[int] = None
+    SkinThickness: int
+    Insulin: Optional[int] = None
+    BMI: float
+    DiabetesPedigreeFunction: Optional[float] = None
+    Age: int
+
 
 set_tracer_provider(
     TracerProvider(
@@ -103,26 +119,18 @@ async def preprocessing_pima_dataset():
     name="predict the onset of pima diabetes",
     status_code=status.HTTP_200_OK,
 )
-async def get_pima_accuracy(model_path: UploadFile = File(...)):
-    try:
-        if model_path:
-            model_name = os.path.join(
-                PACKAGE_DIR, "models", model_path.filename
-            )
+async def get_pima_accuracy(data: Diabetes_data):
+    logger.info("Making predictions...")
+    logger.info(jsonable_encoder(data))
+    logger.info(pd.DataFrame(jsonable_encoder(data), index=[0]))
 
-            logger.info("Make prediction...")
-            result = prediction_workflow(model_name=model_name)
+    result = prediction_workflow(
+        model_name=MODEL_DIR,
+        data=pd.DataFrame(jsonable_encoder(data), index=[0]),
+    )
+    prediction_label = "Normal" if result["status"] == 0 else "Diabetes"
 
-            # Add histogram
-
-            return {"result": result["accuracy"]}
-        else:
-            return {"error": "No file provided for evaluation"}
-    except Exception as e:
-        return {
-            "error": str(e),
-            "model_path": getattr(model_path, "filename", None),
-        }
+    return {"result": prediction_label}
 
 
 if __name__ == "__main__":

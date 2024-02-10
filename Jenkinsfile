@@ -40,6 +40,8 @@ pipeline {
             steps {
                 echo 'Deploying models..'
                 echo 'Running a script to trigger pull and start a docker container'
+                sh 'docker run -d -p 8001:8001 160199/diabetes-prediction-api:latest'
+                
             }
         }
     }

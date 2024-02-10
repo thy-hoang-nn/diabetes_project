@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse
 from time import time
 
 from loguru import logger
-import os
 from opentelemetry import metrics
 from opentelemetry.exporter.prometheus import PrometheusMetricReader
 from opentelemetry.metrics import set_meter_provider
@@ -17,6 +16,8 @@ from prometheus_client import start_http_server
 
 
 from chat_api.classifier import ClassifierSwitcher
+from fastapi.encoders import jsonable_encoder
+import pandas as pd
 
 
 from diabetes.workflow import DiabetesWorkflow
@@ -24,6 +25,21 @@ from diabetes.workflow.steps.preprocessing_data import DataPreprocessingStep
 from diabetes.workflow.steps.load_model import ModelPredictionStep
 
 from diabetes.config import PACKAGE_DIR, MODEL_DIR
+
+
+from pydantic import BaseModel
+from typing import Optional
+
+
+class Diabetes_data(BaseModel):
+    Pregnancies: int
+    Glucose: int
+    BloodPressure: Optional[int] = None
+    SkinThickness: int
+    Insulin: Optional[int] = None
+    BMI: float
+    DiabetesPedigreeFunction: Optional[float] = None
+    Age: int
 
 
 start_http_server(port=8099, addr="0.0.0.0")
@@ -112,39 +128,33 @@ async def preprocessing_pima_dataset():
     name="predict the onset of pima diabetes",
     status_code=status.HTTP_200_OK,
 )
-async def get_pima_accuracy(model_path: UploadFile = File(...)):
-    try:
-        if model_path:
-            model_name = os.path.join(
-                PACKAGE_DIR, "models", model_path.filename
-            )
+async def get_pima_accuracy(data: Diabetes_data):
+    starting_time = time()
+    logger.info("Making predictions...")
+    logger.info(jsonable_encoder(data))
+    logger.info(pd.DataFrame(jsonable_encoder(data), index=[0]))
 
-            starting_time = time()
-            logger.info("Make prediction...")
-            result = prediction_workflow(model_name=model_name)
+    result = prediction_workflow(
+        model_name=MODEL_DIR,
+        data=pd.DataFrame(jsonable_encoder(data), index=[0]),
+    )
+    prediction_label = "Normal" if result["status"] == 0 else "Diabetes"
 
-            # Labels for all metrics
-            label = {"api": "/predict"}
+    label = {"api": "/predict"}
 
-            # Increase the counter
-            counter.add(1, label)
+    # Increase the counter
+    counter.add(1, label)
 
-            # Mark the end of the response
-            ending_time = time()
-            elapsed_time = ending_time - starting_time
+    # Mark the end of the response
+    ending_time = time()
+    elapsed_time = ending_time - starting_time
 
-            # Add histogram
-            logger.info("elapsed time: ", elapsed_time)
-            logger.info(elapsed_time)
-            histogram.record(elapsed_time, label)
-            return {"result": result["accuracy"]}
-        else:
-            return {"error": "No file provided for evaluation"}
-    except Exception as e:
-        return {
-            "error": str(e),
-            "model_path": getattr(model_path, "filename", None),
-        }
+    # Add histogram
+    logger.info("elapsed time: ", elapsed_time)
+    logger.info(elapsed_time)
+    histogram.record(elapsed_time, label)
+
+    return {"result": prediction_label}
 
 
 if __name__ == "__main__":

@@ -10,10 +10,8 @@ from diabetes.workflow.tools.classifier import ClassifierSwitcher
 
 steps = [ModelPredictionStep()]
 
-workflow = DiabetesWorkflow(steps = steps)
+workflow = DiabetesWorkflow(steps=steps)
 
 
-
-result = workflow(model_name = MODEL_DIR)
+result = workflow(model_name=MODEL_DIR, data=None)
 print(result["accuracy"])
-

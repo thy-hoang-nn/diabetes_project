@@ -3,7 +3,8 @@ from fastapi import File, UploadFile
 from fastapi.responses import JSONResponse
 
 from loguru import logger
-import os
+from fastapi.encoders import jsonable_encoder
+import pandas as pd
 
 
 from chat_api.classifier import ClassifierSwitcher
@@ -14,15 +15,27 @@ from diabetes.workflow.steps.preprocessing_data import DataPreprocessingStep
 from diabetes.workflow.steps.load_model import ModelPredictionStep
 
 from diabetes.config import PACKAGE_DIR, MODEL_DIR
+from chat_api.utils.diabetes_data import Diabetes_data
 
 
 preprocessing_workflow = DiabetesWorkflow(steps=[DataPreprocessingStep()])
 prediction_workflow = DiabetesWorkflow(steps=[ModelPredictionStep()])
 
 
+# Class to define the request body
+
+
 router = APIRouter()
 
 uploaded_dataset = None
+
+
+@router.get(
+    "/health",
+    name="Get non-stream chat response",
+)
+def health_check():
+    return JSONResponse(True, 200)
 
 
 @router.post(
@@ -42,7 +55,7 @@ async def upload_dataset_file(dataset_path: UploadFile = File(...)):
 
 
 @router.post(
-    "/query/preprocessing",
+    "/preprocessing",
     name="preprocessing pima dataset",
     status_code=status.HTTP_200_OK,
 )
@@ -71,30 +84,19 @@ async def preprocessing_pima_dataset():
 
 
 @router.post(
-    "/query/perfomance",
+    "/predict",
     name="predict the onset of pima diabetes",
     status_code=status.HTTP_200_OK,
 )
-async def get_pima_accuracy(model_path: UploadFile = File(...)):
-    try:
-        if model_path:
-            model_name = os.path.join(
-                PACKAGE_DIR, "models", model_path.filename
-            )
-            logger.info("Make prediction...")
-            result = prediction_workflow(model_name=model_name)
-            return {"result": result["accuracy"]}
-        else:
-            return {"error": "No file provided for evaluation"}
-    except Exception as e:
-        return {
-            "error": str(e),
-            "model_path": getattr(model_path, "filename", None),
-        }
+async def get_pima_accuracy(data: Diabetes_data):
+    logger.info("Making predictions...")
+    logger.info(jsonable_encoder(data))
+    logger.info(pd.DataFrame(jsonable_encoder(data), index=[0]))
 
+    result = prediction_workflow(
+        model_name=MODEL_DIR,
+        data=pd.DataFrame(jsonable_encoder(data), index=[0]),
+    )
+    prediction_label = "Normal" if result["status"] == 0 else "Diabetes"
 
-# @router.post("/query/perfomance", name="predict the onset of pima diabetes", status_code = status.HTTP_200_OK)
-
-# async def get_pima_accuracy():
-#     result = prediction_workflow(model_name = MODEL_DIR)
-#     return {'result': result['accuracy']}
+    return {"result": prediction_label}

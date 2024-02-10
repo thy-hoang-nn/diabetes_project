@@ -1,7 +1,7 @@
 # Read more about OpenTelemetry here:
 # https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/fastapi/fastapi.html
 
-import os
+
 import uvicorn
 
 from loguru import logger
@@ -14,7 +14,7 @@ from diabetes.workflow import DiabetesWorkflow
 from diabetes.workflow.steps.preprocessing_data import DataPreprocessingStep
 from diabetes.workflow.steps.load_model import ModelPredictionStep
 
-from diabetes.config import PACKAGE_DIR
+from diabetes.config import MODEL_DIR
 
 from opentelemetry import trace
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
@@ -22,6 +22,23 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import get_tracer_provider, set_tracer_provider
+
+from fastapi.encoders import jsonable_encoder
+import pandas as pd
+
+from pydantic import BaseModel
+from typing import Optional
+
+
+class Diabetes_data(BaseModel):
+    Pregnancies: int
+    Glucose: int
+    BloodPressure: Optional[int] = None
+    SkinThickness: int
+    Insulin: Optional[int] = None
+    BMI: float
+    DiabetesPedigreeFunction: Optional[float] = None
+    Age: int
 
 
 set_tracer_provider(
@@ -103,30 +120,24 @@ async def preprocessing_pima_dataset():
     name="predict the onset of pima diabetes",
     status_code=status.HTTP_200_OK,
 )
-async def get_pima_accuracy(model_path: UploadFile = File(...)):
+async def get_pima_accuracy(data: Diabetes_data):
     with tracer.start_as_current_span("processors") as processors:
         with tracer.start_as_current_span(
             "Prediction", links=[trace.Link(processors.get_span_context())]
         ):
-            try:
-                if model_path:
-                    model_name = os.path.join(
-                        PACKAGE_DIR, "models", model_path.filename
-                    )
+            logger.info("Making predictions...")
+            logger.info(jsonable_encoder(data))
+            logger.info(pd.DataFrame(jsonable_encoder(data), index=[0]))
 
-                    logger.info("Make prediction...")
-                    result = prediction_workflow(model_name=model_name)
+            result = prediction_workflow(
+                model_name=MODEL_DIR,
+                data=pd.DataFrame(jsonable_encoder(data), index=[0]),
+            )
+            prediction_label = (
+                "Normal" if result["status"] == 0 else "Diabetes"
+            )
 
-                    # Labels for all metrics
-
-                    return {"result": result["accuracy"]}
-                else:
-                    return {"error": "No file provided for evaluation"}
-            except Exception as e:
-                return {
-                    "error": str(e),
-                    "model_path": getattr(model_path, "filename", None),
-                }
+            return {"result": prediction_label}
 
 
 if __name__ == "__main__":
