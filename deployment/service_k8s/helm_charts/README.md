@@ -3,9 +3,9 @@
 
 ### Install the chart for our OCR without ingress
 ```shell
-cd ocr_wo_ingress
+cd service_wo_ingress
 kubectl create ns model-serving
-helm upgrade --install ocr . -n model-serving
+helm upgrade --install diabetes . -n model-serving
 ```
 ,then use the following command to get the `EXTERNAL-IP`
 ```
@@ -23,10 +23,10 @@ helm upgrade --install nginx-ingress-controller .
 ```
 , then install the OCR chart
 ```shell
-cd ocr_ingress
-helm upgrade --install ocr . -n model-serving
+cd service_ingress
+helm upgrade --install diabetes . -n model-serving
 ```
-Next, get `ocr-nginx-ingress`'s `External IP` by the following command
+Next, get `service-nginx-ingress`'s `External IP` by the following command
 ```shell
 kubectl get ing -n model-serving
 ```
