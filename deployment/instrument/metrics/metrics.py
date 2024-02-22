@@ -15,7 +15,6 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from prometheus_client import start_http_server
 
 
-from chat_api.classifier import ClassifierSwitcher
 from fastapi.encoders import jsonable_encoder
 import pandas as pd
 

@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["thy-hoang-nn <hoangthynguyennguyen@gmail.com>"]
 
-packages = [{include = "instrument"}]
+
 
 [tool.poetry.dependencies]
 python = "^3.9.0"

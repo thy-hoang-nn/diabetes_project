@@ -10,7 +10,7 @@ from chat_api.classifier import ClassifierSwitcher
 
 app = FastAPI(title="Pima diabetes API", docs_url="/docs", version="0.1.0")
 
-app.include_router(ChatRouter, tags=["Chat"], prefix="/chat")
+app.include_router(ChatRouter)
 
 
 @app.get("/", tags=["Root"])
