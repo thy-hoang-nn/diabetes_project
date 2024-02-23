@@ -17,11 +17,11 @@ spec:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 30000
+              number: 8001
       - path: /openapi.json
         pathType: Prefix
         backend:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 30000
+              number: 8001

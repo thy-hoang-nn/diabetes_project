@@ -9,7 +9,7 @@ spec:
   selector:
     app: {{ .Release.Name }}
   ports:
-    - port: 30000
+    - port: 8001
       protocol: TCP
-      targetPort: 30000
+      targetPort: 8001
   type: NodePort

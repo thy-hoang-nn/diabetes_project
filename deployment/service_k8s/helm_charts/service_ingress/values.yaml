@@ -1,4 +1,4 @@
 image:
-  repository: 160199/diabetes-predition-api
-  tag: "8"
+  repository: 160199/diabetes-prediction-api
+  tag: "latest"
   pullPolicy: Always

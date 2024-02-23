@@ -19,14 +19,16 @@ RUN poetry install
 
 RUN pip install python-multipart
 
+
+
 # Copy your application files to the container
-COPY chat_api  /app/chat_api
+COPY deployment  /app/deployment
 
-WORKDIR /app/chat_api
+WORKDIR /app/deployment/instrument
 
 
-RUN poetry install
+RUN poetry install --no-root
 
 
 # Run your FastAPI application using uvicorn
-CMD ["python", "chat_api/main.py"]
+CMD ["python", "metrics/metrics.py"]

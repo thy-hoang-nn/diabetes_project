@@ -8,7 +8,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx" # which can be replaced by gce, gce-internal or istio
 spec:
   rules:
-  - host: ocr.example.com
+  - host: diabetes.example.com
     http:
       paths:
       - path: /docs
@@ -17,18 +17,18 @@ spec:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 30000
+              number: 8001
       - path: /openapi.json
         pathType: Prefix
         backend:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 30000
-      - path: /predict
+              number: 8001
+      - path: /chat/predict
         pathType: Prefix
         backend:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 30000
+              number: 8001
