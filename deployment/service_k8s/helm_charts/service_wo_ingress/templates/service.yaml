@@ -9,8 +9,8 @@ spec:
   selector:
     app: {{ .Release.Name }}
   ports:
-    - port: 8001
+    - port: 8088
       protocol: TCP
-      targetPort: 8001   
+      targetPort: 8088  
   type: LoadBalancer
   
