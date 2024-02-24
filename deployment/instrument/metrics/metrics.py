@@ -22,6 +22,7 @@ import pandas as pd
 from diabetes.workflow import DiabetesWorkflow
 from diabetes.workflow.steps.preprocessing_data import DataPreprocessingStep
 from diabetes.workflow.steps.load_model import ModelPredictionStep
+from diabetes.workflow.tools.classifier import ClassifierSwitcher
 
 from diabetes.config import PACKAGE_DIR, MODEL_DIR
 

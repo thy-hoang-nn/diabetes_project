@@ -17,18 +17,18 @@ spec:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 8001
+              number: 8088
       - path: /openapi.json
         pathType: Prefix
         backend:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 8001
+              number: 8088
       - path: /chat/predict
         pathType: Prefix
         backend:
           service:
             name: {{ .Release.Name }}
             port:
-              number: 8001
+              number: 8088
