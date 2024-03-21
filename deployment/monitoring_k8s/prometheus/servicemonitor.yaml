@@ -1,0 +1,42 @@
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   labels:
+#     app: diabetes-monitor
+#   name: diabetes-ext
+#   namespace: monitoring
+# spec:
+#   endpoints:
+#   - port: web
+#     interval: 15s
+#   namespaceSelector:
+#     matchNames:
+#     - model-serving
+#   selector:
+#     matchLabels:
+#       app: diabetes
+#   namespaceSelector:
+#     matchNames:
+#     - model-serving
+      
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: monitoring-diabetes
+  namespace: monitoring
+  labels:
+    app: diabetes
+    
+spec:
+  selector:
+    matchLabels:
+      # Target app service
+      app: diabetes
+  endpoints:
+  - interval: 15s
+    path: /metrics
+    port: web
+  namespaceSelector:
+    matchNames:
+    - model-serving

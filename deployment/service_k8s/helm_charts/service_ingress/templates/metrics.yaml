@@ -1,0 +1,38 @@
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: {{ .Release.Name }}-ext
+#   labels:
+#     app: {{ .Release.Name }}
+#   namespace: model-serving
+  
+# spec:
+#   selector:
+#     app: {{ .Release.Name }}
+#   ports:
+#     - path: /metrics
+#       port: 8099
+#       protocol: TCP
+#       targetPort: 8099
+#       name: web
+
+#   type: NodePort
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name:  {{ .Release.Name }}-ext
+  labels:
+    app:  {{ .Release.Name }}
+  namespace: model-serving
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    protocol: TCP
+    port: 8099
+    targetPort: 8099
+  selector:
+    app: {{ .Release.Name }}
+    
